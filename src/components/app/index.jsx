@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
-import { hot } from 'react-hot-loader';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+// actions
+import fetchMovies from '../../redux/actions/fetch';
+
 // servises
-import { fetchMoviesByCategory, fetchMoviesByTitle } from '../../servises/api';
+import { fetchMoviesByTitle } from '../../servises/api';
 
 // components
 import Watchlist from '../watchlist';
@@ -12,6 +16,9 @@ import ErrorNotification from '../shared-ui/error-notification';
 import MovieList from '../movie-list';
 import Panel from '../shared-ui/panel';
 import MovieInfoModal from '../movie-info-modal';
+// training redux
+// import Counter from '../counter';
+// import StepSelector from '../step-selector';
 
 // options
 import selectorOptions from '../../selector-options';
@@ -21,9 +28,7 @@ import styles from './styles.css';
 class App extends Component {
   state = {
     category: null,
-    movies: [],
-    isLoading: false,
-    error: null,
+
     watchlist: [],
     movieID: null,
     showModal: false,
@@ -48,29 +53,18 @@ class App extends Component {
     localStorage.setItem('watchlist', JSON.stringify(watchlist));
 
     const { category } = this.state;
+    const { fetchMovies: fetchMoviesByCategory } = this.props;
 
     if (!prevState.category && !category) return;
 
     if (!prevState.category) {
-      this.handleFetch();
-      fetchMoviesByCategory({
-        category: category.value,
-        onSuccess: this.handleFetchSuccess,
-        onError: this.handleFetchError,
-      });
-
+      fetchMoviesByCategory(category.value);
       return;
     }
 
     const prevCategory = prevState.category;
-
     if (prevCategory.value !== category.value) {
-      this.handleFetch();
-      fetchMoviesByCategory({
-        category: category.value,
-        onSuccess: this.handleFetchSuccess,
-        onError: this.handleFetchError,
-      });
+      fetchMoviesByCategory(category.value);
     }
   }
 
@@ -114,13 +108,13 @@ class App extends Component {
     );
   };
 
-  handleFetchSuccess = movies => this.setState({ movies, isLoading: false });
+  // handleFetchSuccess = movies => this.setState({ movies, isLoading: false });
 
-  handleFetchError = error => this.setState({ error, isLoading: false });
+  // handleFetchError = error => this.setState({ error, isLoading: false });
 
-  handleFetch = () => {
-    this.setState({ isLoading: true, error: null });
-  };
+  // handleFetch = () => {
+  //   this.setState({ isLoading: true, error: null });
+  // };
 
   searchByTitle = value => {
     fetchMoviesByTitle({
@@ -133,15 +127,8 @@ class App extends Component {
   changeCategory = category => this.setState({ category });
 
   render() {
-    const {
-      category,
-      movies,
-      isLoading,
-      error,
-      watchlist,
-      movieID,
-      showModal,
-    } = this.state;
+    const { movies, loading, error } = this.props;
+    const { category, watchlist, movieID, showModal } = this.state;
     return (
       <div className={styles.wrapper}>
         {showModal && (
@@ -169,9 +156,12 @@ class App extends Component {
             <TitleSearch onSubmit={this.searchByTitle} />
           </Panel>
 
+          {/* <StepSelector />
+          <Counter /> */}
+
           {error && <ErrorNotification message={error.message} />}
 
-          {isLoading && <MyBulletListLoader />}
+          {loading && <MyBulletListLoader />}
 
           {movies.length > 0 && (
             <MovieList
@@ -186,4 +176,26 @@ class App extends Component {
   }
 }
 
-export default hot(module)(App);
+App.propTypes = {
+  movies: PropTypes.arrayOf(Object).isRequired,
+  loading: PropTypes.bool.isRequired,
+  error: PropTypes.instanceOf(Error),
+  fetchMovies: PropTypes.func.isRequired,
+};
+
+App.defaultProps = {
+  error: null,
+};
+
+const mapStateToProps = state => ({
+  movies: state.movies.items,
+  loading: state.movies.loading,
+  error: state.movies.error,
+});
+
+const mapDispatchToProps = { fetchMovies };
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(App);
