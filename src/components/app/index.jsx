@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import fetchMovies from '../../redux/actions/fetch';
 
 // servises
-import { fetchMoviesByTitle } from '../../servises/api';
+import { getCategoryUrl } from '../../servises/api';
 
 // components
 import Watchlist from '../watchlist';
@@ -16,9 +16,6 @@ import ErrorNotification from '../shared-ui/error-notification';
 import MovieList from '../movie-list';
 import Panel from '../shared-ui/panel';
 import MovieInfoModal from '../movie-info-modal';
-// training redux
-// import Counter from '../counter';
-// import StepSelector from '../step-selector';
 
 // options
 import selectorOptions from '../../selector-options';
@@ -41,6 +38,7 @@ class App extends Component {
   //   const shouldUpdate = category.value !== nextState.category.value;
   //   return shouldUpdate;
   // }
+
   componentDidMount() {
     const watchlist = localStorage.getItem('watchlist');
     if (watchlist) {
@@ -57,20 +55,18 @@ class App extends Component {
 
     if (!prevState.category && !category) return;
 
+    const url = getCategoryUrl(category.value);
+
     if (!prevState.category) {
-      fetchMoviesByCategory(category.value);
+      fetchMoviesByCategory(url);
       return;
     }
 
     const prevCategory = prevState.category;
     if (prevCategory.value !== category.value) {
-      fetchMoviesByCategory(category.value);
+      fetchMoviesByCategory(url);
     }
   }
-
-  // changeFilter = ({ target }) => {
-  //   this.setState({ filter: target.value });
-  // };
 
   handleOpenModal = movieID => {
     this.setState({ movieID, showModal: true });
@@ -108,22 +104,6 @@ class App extends Component {
     );
   };
 
-  // handleFetchSuccess = movies => this.setState({ movies, isLoading: false });
-
-  // handleFetchError = error => this.setState({ error, isLoading: false });
-
-  // handleFetch = () => {
-  //   this.setState({ isLoading: true, error: null });
-  // };
-
-  searchByTitle = value => {
-    fetchMoviesByTitle({
-      title: value,
-      onSuccess: this.handleFetchSuccess,
-      onError: this.handleFetchError,
-    });
-  };
-
   changeCategory = category => this.setState({ category });
 
   render() {
@@ -153,11 +133,8 @@ class App extends Component {
               options={selectorOptions}
               placeholder="Choose category..."
             />
-            <TitleSearch onSubmit={this.searchByTitle} />
+            <TitleSearch />
           </Panel>
-
-          {/* <StepSelector />
-          <Counter /> */}
 
           {error && <ErrorNotification message={error.message} />}
 

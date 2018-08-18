@@ -4,7 +4,7 @@ import {
   FETCH_MOVIE_ERROR,
 } from './types';
 
-import { fetchMoviesByCategory } from '../../servises/api';
+import { getMovies } from '../../servises/api';
 
 const fetchMoviesStart = () => ({
   type: FETCH_MOVIE_START,
@@ -20,10 +20,10 @@ const fetchMoviesError = error => ({
   payload: error,
 });
 
-const fetchMovies = category => dispatch => {
+const fetchMovies = url => dispatch => {
   dispatch(fetchMoviesStart());
 
-  fetchMoviesByCategory(category)
+  getMovies(url)
     .then(movies => dispatch(fetchMoviesSucces(movies)))
     .catch(error => dispatch(fetchMoviesError(error)));
 };

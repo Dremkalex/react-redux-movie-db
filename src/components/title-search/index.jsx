@@ -1,17 +1,24 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 // components
 import Panel from '../shared-ui/panel';
 import Button from '../shared-ui/button';
 import ICONS from '../icon/icons';
 import Icon from '../icon';
 
+// actions
+import fetchMovies from '../../redux/actions/fetch';
+
+// servises
+import { getTitleUrl } from '../../servises/api';
+
 // styles
 import styles from './styles.css';
 
 class TitleSearch extends Component {
   static propTypes = {
-    onSubmit: PropTypes.func.isRequired,
+    fetchMovies: PropTypes.func.isRequired,
   };
 
   state = {
@@ -24,12 +31,14 @@ class TitleSearch extends Component {
 
   submitTitle = evt => {
     evt.preventDefault();
+
     const { title } = this.state;
-    const { onSubmit } = this.props;
+    const { fetchMovies: fetchMoviesByTitle } = this.props;
 
     if (!title) return;
 
-    onSubmit(title);
+    const url = getTitleUrl(title);
+    fetchMoviesByTitle(url);
     this.setState({ title: '' });
   };
 
@@ -55,13 +64,9 @@ class TitleSearch extends Component {
   }
 }
 
-// TitleSearch.propTypes = {
-//   filter: PropTypes.string,
-//   onChange: PropTypes.func.isRequired,
-//   onSubmit: PropTypes.func.isRequired,
-// };
+const mapDispatchtoProps = { fetchMovies };
 
-// TitleSearch.defaultProps = {
-//   filter: '',
-// };
-export default TitleSearch;
+export default connect(
+  null,
+  mapDispatchtoProps,
+)(TitleSearch);
