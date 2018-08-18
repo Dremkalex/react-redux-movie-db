@@ -1,14 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
+import { connect } from 'react-redux';
 // components
 import Panel from '../shared-ui/panel';
 import WatchMovie from '../watch-movie';
-
+// actions
+import { removeFromWatchlist } from '../../redux/actions/watchlist';
 // styles
 import styles from './styles.css';
 
-const Watchlist = ({ watchlist, onClickRemove, onClickInfo }) => (
+const Watchlist = ({
+  watchlist,
+  removeFromWatchlist: removeFromWatch,
+  onClickInfo,
+}) => (
   <Panel watchListPanel>
     <h2 className={styles.title}>Watchlist</h2>
     {watchlist.length > 0 && (
@@ -17,7 +22,7 @@ const Watchlist = ({ watchlist, onClickRemove, onClickInfo }) => (
           <li key={movie.id} className={styles.li}>
             <WatchMovie
               movie={movie}
-              onClickRemove={() => onClickRemove(movie)}
+              onClickRemove={() => removeFromWatch(movie.id)}
               onClickInfo={() => onClickInfo(movie.id)}
             />
           </li>
@@ -33,8 +38,17 @@ Watchlist.propTypes = {
       id: PropTypes.number.isRequired,
     }),
   ).isRequired,
-  onClickRemove: PropTypes.func.isRequired,
   onClickInfo: PropTypes.func.isRequired,
+  removeFromWatchlist: PropTypes.func.isRequired,
 };
 
-export default Watchlist;
+const mapStateToProps = state => ({
+  watchlist: state.watchlist,
+});
+
+const mapDispatchToProps = { removeFromWatchlist };
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Watchlist);

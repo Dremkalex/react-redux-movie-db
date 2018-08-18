@@ -1,12 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-// actions
-import fetchMovies from '../../redux/actions/fetch';
-
-// servises
-import { getCategoryUrl } from '../../servises/api';
-
 // components
 import Watchlist from '../watchlist';
 import CategorySelector from '../category-selector';
@@ -16,28 +10,14 @@ import ErrorNotification from '../shared-ui/error-notification';
 import MovieList from '../movie-list';
 import Panel from '../shared-ui/panel';
 import MovieInfoModal from '../movie-info-modal';
-
-// options
-import selectorOptions from '../../selector-options';
 // styles
 import styles from './styles.css';
 
 class App extends Component {
   state = {
-    category: null,
-
-    watchlist: [],
     movieID: null,
     showModal: false,
   };
-
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   const { category } = this.state;
-  //   if (!category) return true;
-
-  //   const shouldUpdate = category.value !== nextState.category.value;
-  //   return shouldUpdate;
-  // }
 
   componentDidMount() {
     const watchlist = localStorage.getItem('watchlist');
@@ -46,26 +26,9 @@ class App extends Component {
     }
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate() {
     const { watchlist } = this.state;
     localStorage.setItem('watchlist', JSON.stringify(watchlist));
-
-    const { category } = this.state;
-    const { fetchMovies: fetchMoviesByCategory } = this.props;
-
-    if (!prevState.category && !category) return;
-
-    const url = getCategoryUrl(category.value);
-
-    if (!prevState.category) {
-      fetchMoviesByCategory(url);
-      return;
-    }
-
-    const prevCategory = prevState.category;
-    if (prevCategory.value !== category.value) {
-      fetchMoviesByCategory(url);
-    }
   }
 
   handleOpenModal = movieID => {
@@ -74,41 +37,9 @@ class App extends Component {
 
   handleCloseModal = () => this.setState({ movieID: null, showModal: false });
 
-  addWatchList = movie => {
-    const { watchlist } = this.state;
-    const { id } = movie;
-
-    const isMovieInWatchlist = watchlist.find(item => item.id === id);
-    if (isMovieInWatchlist) return;
-
-    this.setState(prevState => ({
-      watchlist: [movie, ...prevState.watchlist],
-    }));
-
-    // localStorage.setItem('watchlist', JSON.stringify(watchlist));
-  };
-
-  removeWatchlist = movie => {
-    const { watchlist } = this.state;
-    const { id } = movie;
-
-    const newWatchList = watchlist.filter(item => item.id !== id);
-
-    // localStorage.setItem('watchlist', JSON.stringify(newWatchList));
-
-    this.setState(
-      {
-        watchlist: newWatchList,
-      },
-      () => localStorage.setItem('watchlist', JSON.stringify(newWatchList)),
-    );
-  };
-
-  changeCategory = category => this.setState({ category });
-
   render() {
     const { movies, loading, error } = this.props;
-    const { category, watchlist, movieID, showModal } = this.state;
+    const { movieID, showModal } = this.state;
     return (
       <div className={styles.wrapper}>
         {showModal && (
@@ -118,21 +49,14 @@ class App extends Component {
             onClose={this.handleCloseModal}
           />
         )}
+
         <aside className={styles.aside}>
-          <Watchlist
-            watchlist={watchlist}
-            onClickRemove={this.removeWatchlist}
-            onClickInfo={this.handleOpenModal}
-          />
+          <Watchlist onClickInfo={this.handleOpenModal} />
         </aside>
+
         <main className={styles.main}>
           <Panel searhPanel>
-            <CategorySelector
-              value={category}
-              onChange={this.changeCategory}
-              options={selectorOptions}
-              placeholder="Choose category..."
-            />
+            <CategorySelector />
             <TitleSearch />
           </Panel>
 
@@ -141,11 +65,7 @@ class App extends Component {
           {loading && <MyBulletListLoader />}
 
           {movies.length > 0 && (
-            <MovieList
-              movies={movies}
-              onClickAdd={this.addWatchList}
-              onClickInfo={this.handleOpenModal}
-            />
+            <MovieList movies={movies} onClickInfo={this.handleOpenModal} />
           )}
         </main>
       </div>
@@ -157,7 +77,7 @@ App.propTypes = {
   movies: PropTypes.arrayOf(Object).isRequired,
   loading: PropTypes.bool.isRequired,
   error: PropTypes.instanceOf(Error),
-  fetchMovies: PropTypes.func.isRequired,
+  watchlist: PropTypes.arrayOf(Object).isRequired,
 };
 
 App.defaultProps = {
@@ -168,11 +88,10 @@ const mapStateToProps = state => ({
   movies: state.movies.items,
   loading: state.movies.loading,
   error: state.movies.error,
+  watchlist: state.watchlist,
 });
-
-const mapDispatchToProps = { fetchMovies };
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps,
+  null,
 )(App);

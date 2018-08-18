@@ -12,6 +12,7 @@ import {
 //     loading: false,
 //     error: null,
 //   },
+//   watchlist: []
 // };
 
 const items = (state = [], { type, payload }) => {

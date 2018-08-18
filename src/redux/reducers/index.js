@@ -1,12 +1,10 @@
 import { combineReducers } from 'redux';
 import moviesReducer from './movies';
-// import counterReducer from './counter';
-// import stepReducer from './step';
+import watchlistReducer from './watchlist';
 
 const rootReducer = combineReducers({
-  // countValue: counterReducer,
-  // step: stepReducer,
   movies: moviesReducer,
+  watchlist: watchlistReducer,
 });
 
 export default rootReducer;
