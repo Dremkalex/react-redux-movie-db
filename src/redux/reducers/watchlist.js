@@ -1,6 +1,8 @@
 import { ADD_TO_WATCHLIST, REMOVE_FROM_WATCHLIST } from '../actions/types';
 
-const watchlistReducer = (state = [], { type, payload }) => {
+const initState = JSON.parse(localStorage.getItem('watchlist')) || [];
+
+const watchlistReducer = (state = initState, { type, payload }) => {
   switch (type) {
     case ADD_TO_WATCHLIST:
       if (state.find(movie => movie.id === payload.id)) return state;

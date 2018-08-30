@@ -10,6 +10,8 @@ import ErrorNotification from '../shared-ui/error-notification';
 import MovieList from '../movie-list';
 import Panel from '../shared-ui/panel';
 import MovieInfoModal from '../movie-info-modal';
+// actions
+import addToStorage from '../../redux/actions/localstorage';
 // styles
 import styles from './styles.css';
 
@@ -19,16 +21,12 @@ class App extends Component {
     showModal: false,
   };
 
-  componentDidMount() {
-    const watchlist = localStorage.getItem('watchlist');
-    if (watchlist) {
-      this.setState({ watchlist: JSON.parse(watchlist) });
+  componentDidUpdate(prevProps) {
+    const { watchlist, addToStorage: saveToStorage } = this.props;
+    const prevWatchlist = prevProps.watchlist;
+    if (watchlist !== prevWatchlist) {
+      saveToStorage(watchlist);
     }
-  }
-
-  componentDidUpdate() {
-    const { watchlist } = this.state;
-    localStorage.setItem('watchlist', JSON.stringify(watchlist));
   }
 
   handleOpenModal = movieID => {
@@ -77,6 +75,7 @@ App.propTypes = {
   movies: PropTypes.arrayOf(Object).isRequired,
   loading: PropTypes.bool.isRequired,
   error: PropTypes.instanceOf(Error),
+  addToStorage: PropTypes.func.isRequired,
   watchlist: PropTypes.arrayOf(Object).isRequired,
 };
 
@@ -91,7 +90,9 @@ const mapStateToProps = state => ({
   watchlist: state.watchlist,
 });
 
+const mapDispatchToProps = { addToStorage };
+
 export default connect(
   mapStateToProps,
-  null,
+  mapDispatchToProps,
 )(App);

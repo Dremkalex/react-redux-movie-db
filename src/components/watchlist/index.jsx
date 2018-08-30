@@ -11,8 +11,8 @@ import styles from './styles.css';
 
 const Watchlist = ({
   watchlist,
-  removeFromWatchlist: removeFromWatch,
   onClickInfo,
+  removeFromWatchlist: removeFromWatch,
 }) => (
   <Panel watchListPanel>
     <h2 className={styles.title}>Watchlist</h2>
@@ -33,11 +33,7 @@ const Watchlist = ({
 );
 
 Watchlist.propTypes = {
-  watchlist: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-    }),
-  ).isRequired,
+  watchlist: PropTypes.arrayOf(Object).isRequired,
   onClickInfo: PropTypes.func.isRequired,
   removeFromWatchlist: PropTypes.func.isRequired,
 };

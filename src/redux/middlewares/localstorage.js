@@ -1,5 +1,10 @@
-// const localstorage = store => next => action => {
-//   next(action);
-// };
+import { ADD_TO_STORAGE } from '../actions/types';
 
-// export default localstorage;
+const localstorage = () => next => action => {
+  if (action.type === ADD_TO_STORAGE) {
+    localStorage.setItem('watchlist', JSON.stringify(action.payload));
+  }
+  next(action);
+};
+
+export default localstorage;
