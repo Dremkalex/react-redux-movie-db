@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-// actions
+import { compose } from 'redux';
+// hoc
 import Select from 'react-select';
+import withRenderLog from '../../hoc/withRenderLog';
+// actions
 import fetchMovies from '../../redux/actions/fetch';
 // servises
 import { getCategoryUrl } from '../../servises/api';
@@ -46,7 +49,11 @@ class CategorySelector extends Component {
   }
 }
 const mapDispatchToProps = { fetchMovies };
-export default connect(
-  null,
-  mapDispatchToProps,
+
+export default compose(
+  connect(
+    null,
+    mapDispatchToProps,
+  ),
+  withRenderLog,
 )(CategorySelector);

@@ -1,11 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
+// hoc
+import withRenderLog from '../../hoc/withRenderLog';
 // components
 import Panel from '../shared-ui/panel';
 import WatchMovie from '../watch-movie';
 // actions
 import { removeFromWatchlist } from '../../redux/actions/watchlist';
+// selectors
+import getWatchist from '../../redux/selectors/watchlist';
 // styles
 import styles from './styles.css';
 
@@ -39,12 +44,15 @@ Watchlist.propTypes = {
 };
 
 const mapStateToProps = state => ({
-  watchlist: state.watchlist,
+  watchlist: getWatchist(state),
 });
 
 const mapDispatchToProps = { removeFromWatchlist };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
+export default compose(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps,
+  ),
+  withRenderLog,
 )(Watchlist);

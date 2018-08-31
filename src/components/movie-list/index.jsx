@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
+// hoc
+import withRenderLog from '../../hoc/withRenderLog';
 // components
 import Movie from '../movie';
 // actions
@@ -42,14 +45,16 @@ MovieList.propTypes = {
       poster_path: PropTypes.string,
     }).isRequired,
   ).isRequired,
-  // onClickAdd: PropTypes.func.isRequired,
   onClickInfo: PropTypes.func.isRequired,
   addToWatchlist: PropTypes.func.isRequired,
 };
 
 const mapDispatchToProps = { addToWatchlist };
 
-export default connect(
-  null,
-  mapDispatchToProps,
+export default compose(
+  connect(
+    null,
+    mapDispatchToProps,
+  ),
+  withRenderLog,
 )(MovieList);

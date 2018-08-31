@@ -12,6 +12,13 @@ import Panel from '../shared-ui/panel';
 import MovieInfoModal from '../movie-info-modal';
 // actions
 import addToStorage from '../../redux/actions/localstorage';
+// selectors
+import {
+  getMovies,
+  isMoviesLoading,
+  getMoviesErorr,
+} from '../../redux/selectors/movies';
+import getWatchist from '../../redux/selectors/watchlist';
 // styles
 import styles from './styles.css';
 
@@ -84,10 +91,10 @@ App.defaultProps = {
 };
 
 const mapStateToProps = state => ({
-  movies: state.movies.items,
-  loading: state.movies.loading,
-  error: state.movies.error,
-  watchlist: state.watchlist,
+  movies: getMovies(state),
+  loading: isMoviesLoading(state),
+  error: getMoviesErorr(state),
+  watchlist: getWatchist(state),
 });
 
 const mapDispatchToProps = { addToStorage };

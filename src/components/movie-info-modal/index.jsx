@@ -91,7 +91,7 @@ class MovieInfoModal extends Component {
 
 MovieInfoModal.propTypes = {
   movieID: PropTypes.number.isRequired,
-  showModal: PropTypes.number.isRequired,
+  showModal: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
 };
 

@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
+// hoc
+import withRenderLog from '../../hoc/withRenderLog';
 // components
 import Panel from '../shared-ui/panel';
 import Button from '../shared-ui/button';
@@ -66,7 +69,10 @@ class TitleSearch extends Component {
 
 const mapDispatchtoProps = { fetchMovies };
 
-export default connect(
-  null,
-  mapDispatchtoProps,
+export default compose(
+  connect(
+    null,
+    mapDispatchtoProps,
+  ),
+  withRenderLog,
 )(TitleSearch);
